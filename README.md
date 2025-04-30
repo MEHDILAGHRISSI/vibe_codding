@@ -1,5 +1,4 @@
 # Structure du projet
-## Supposons que ton projet a deux parties principales : un backend (Node.js + MongoDB) et un frontend (Angular). Voici à quoi cela pourrait ressembler :
 
 
 /vibe_coding
@@ -12,17 +11,29 @@ Le backend gère les opérations liées aux clients, produits et commandes. Il e
 **Structure du backend :**
 
 /backend
+---
     /models                  # Modèles Mongoose pour MongoDB
+    
         client.js            # Modèle pour les clients
+        
         produit.js           # Modèle pour les produits
+        
         commande.js          # Modèle pour les commandes
+        
     /routes                  # Routes de l'API pour gérer les clients, produits et commandes
+    
         clientRoutes.js      # Routes pour gérer les clients
+        
         produitRoutes.js     # Routes pour gérer les produits
+        
         commandeRoutes.js    # Routes pour gérer les commandes
+        
     server.js               # Fichier principal qui démarre le serveur Node.js
+    
     .env                     # Fichier d'environnement pour les variables sensibles (ex: URI MongoDB)
+    
     package.json             # Dépendances et scripts du backend
+    ---
 **Explication des fichiers :**
 /models : Ce dossier contient les modèles Mongoose. Chaque modèle définit la structure des documents dans MongoDB pour un type spécifique de données (client, produit, commande).
 
@@ -83,22 +94,39 @@ Le frontend est une application Angular qui permet à l'utilisateur d'interagir 
 **Structure du frontend :**
 
 /frontend
+
     /src
+    
         /app
+        
             /components
+            
                 commande.component.ts      # Composant pour afficher et gérer les commandes
+                
                 client.component.ts        # Composant pour afficher et gérer les clients
+                
                 produit.component.ts       # Composant pour afficher et gérer les produits
+                
             /services
+            
                 api.service.ts             # Service pour effectuer des appels HTTP vers le backend
+                
             app.component.ts               # Composant principal de l'application Angular
+            
             app.module.ts                 # Définition du module Angular
+            
             main.ts                       # Point d'entrée de l'application Angular
+            
         /assets
+        
             /images                      # Dossier pour stocker des images et ressources statiques
+            
         index.html                       # Fichier HTML principal
+        
         styles.css                       # Fichier CSS global
+        
     package.json                        # Dépendances et scripts du frontend
+    
 **Explication des fichiers :**
 /app/components : Ce dossier contient les composants Angular pour gérer les vues de l'application. Chaque composant correspond à une fonctionnalité spécifique.
 
@@ -121,33 +149,50 @@ main.ts : Le point d'entrée de l'application Angular. C'est ici que l'applicati
 **Exemple de api.service.ts :**
 
 import { Injectable } from '@angular/core';
+
 import { HttpClient } from '@angular/common/http';  // Import de HttpClient pour effectuer les requêtes
+
 import { Observable } from 'rxjs';
 
 @Injectable({
+
   providedIn: 'root'
+  
 })
+
 export class ApiService {
+
 
   private apiUrl = 'http://localhost:3000/api';  // URL du backend
 
   constructor(private http: HttpClient) { }
 
   // Récupérer tous les clients
+  
   getClients(): Observable<any> {
+  
     return this.http.get(`${this.apiUrl}/clients`);
+    
   }
 
   // Récupérer tous les produits
+  
   getProduits(): Observable<any> {
+  
     return this.http.get(`${this.apiUrl}/produits`);
+    
   }
 
   // Passer une commande
+  
   passerCommande(data: any): Observable<any> {
+  
     return this.http.post(`${this.apiUrl}/commandes`, data);
+    
   }
+  
 }
+
 ## Conclusion
 Cette architecture sépare bien les préoccupations entre le backend et le frontend :
 
