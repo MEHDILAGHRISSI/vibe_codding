@@ -1,0 +1,58 @@
+<div class="commande-container">
+    <h2>Passer une commande</h2>
+  
+    <!-- Sélection du client -->
+    <div class="client-selection">
+      <label for="client">Client :</label>
+      <select [(ngModel)]="selectedClient" id="client" class="form-select">
+        <option *ngFor="let client of clients" [ngValue]="client">
+          {{ client.nom }}
+        </option>
+      </select>
+    </div>
+  
+    <div *ngIf="selectedClient" class="commande-details">
+      <h3>Détails de la commande pour {{ selectedClient.nom }}</h3>
+  
+      <!-- Tableau des lignes de commande -->
+      <table class="commande-table">
+        <thead>
+          <tr>
+            <th>Produit</th>
+            <th>Quantité</th>
+            <th>Total HT</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let ligne of lignes; let i = index">
+            <td>
+              <select [(ngModel)]="ligne.produit" class="form-select">
+                <option [ngValue]="null">-- Choisir un produit --</option>
+                <option *ngFor="let prod of produitsDisponibles(i)" [ngValue]="prod">
+                  {{ prod.libelle }}
+                </option>
+              </select>
+            </td>
+            <td>
+              <input type="number" [(ngModel)]="ligne.qte" min="1" class="form-input" />
+            </td>
+            <td>{{ (ligne.produit.pu || 0) * ligne.qte | number: '1.2-2' }} DH</td>
+            <td>
+              <button (click)="removeLigne(i)" class="btn btn-danger">Supprimer</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+  
+      <button (click)="addLigne()" class="btn btn-success">Ajouter une ligne</button>
+  
+      <div class="totaux">
+        <p><strong>Total HT :</strong> {{ totalHT() | number: '1.2-2' }} DH</p>
+        <p><strong>Total TTC (20%) :</strong> {{ totalTTC() | number: '1.2-2' }} DH</p>
+      </div>
+  
+      <button (click)="passCommande()" class="btn btn-primary">Passer la commande</button>
+    </div>
+  </div>
+  
