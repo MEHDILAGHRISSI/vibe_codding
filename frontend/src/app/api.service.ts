@@ -11,18 +11,17 @@ export class ApiService {
 
   constructor(private http: HttpClient) {}  // Injection de HttpClient dans ApiService
 
-  // Exemple de méthode pour récupérer des clients
-  getClients(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/clients`);
-  }
+  // Dans api.service.ts
+getClients(): Observable<any> {
+  return this.http.get(`http://localhost:3000/client`);
+}
 
-  // Exemple de méthode pour récupérer des produits
-  getProduits(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/produits`);
-  }
+getProduits(): Observable<any> {
+  return this.http.get(`http://localhost:3000/Produit`);
+}
 
-  // Méthode pour passer une commande
-  passerCommande(data: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/commandes`, data);
-  }
+passerCommande(data: any): Observable<any> {
+  return this.http.post(`http://localhost:3000/commandes`, data); // Mais il n'existe pas encore !
+}
+
 }

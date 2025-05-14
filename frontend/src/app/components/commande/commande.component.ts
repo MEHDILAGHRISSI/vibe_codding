@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { ApiService } from '../../api.service';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ApiService } from '../../api.service';
+import { CommandeService } from '../../commande.service';
 
 // Définition de l'interface Produit
 interface Produit {
@@ -20,47 +21,41 @@ interface Produit {
 export class CommandeComponent implements OnInit {
   // Propriétés de l'état de la commande
   selectedClient: any;
-  clients: any[] = []; // Liste des clients
-  lignes: { produit: Produit; qte: number }[] = []; // Lignes de commande avec produit et quantité
-
-  // Exemple de produits disponibles (initialement vides, remplis par l'API)
+  clients: any[] = [];
+  lignes: { produit: Produit; qte: number }[] = [];
   produitsDisponiblesList: Produit[] = [];
 
-  constructor(private api: ApiService) {}
+  private api = inject(ApiService);
+  private commandeService = inject(CommandeService);
+ // Injection du service
 
   ngOnInit() {
-    // Charger les clients et produits depuis l'API
     this.api.getClients().subscribe(data => this.clients = data);
     this.api.getProduits().subscribe(data => this.produitsDisponiblesList = data);
   }
 
-  // Méthode pour obtenir les produits disponibles
   produitsDisponibles(index: number): Produit[] {
-    // Retourner la liste de produits
     return this.produitsDisponiblesList;
   }
 
-  // Ajouter une nouvelle ligne dans la commande
   addLigne() {
-    this.lignes.push({ produit: this.produitsDisponiblesList[0], qte: 1 }); // Ajoute une ligne avec le premier produit et une quantité de 1
+    if (this.produitsDisponiblesList.length > 0) {
+      this.lignes.push({ produit: this.produitsDisponiblesList[0], qte: 1 });
+    }
   }
 
-  // Supprimer une ligne de commande
   removeLigne(i: number) {
-    this.lignes.splice(i, 1); // Retirer la ligne à l'index i
+    this.lignes.splice(i, 1);
   }
 
-  // Calculer le total HT (Hors taxes) de la commande
   totalHT() {
     return this.lignes.reduce((total, ligne) => total + ligne.produit.pu * ligne.qte, 0);
   }
 
-  // Calculer le total TTC (Toutes taxes comprises) de la commande
   totalTTC() {
-    return this.totalHT() * 1.2; // Supposons une TVA de 20%
+    return this.totalHT() * 1.2; // TVA 20%
   }
 
-  // Passer la commande
   passCommande() {
     if (!this.selectedClient || this.lignes.length === 0) {
       alert("Veuillez sélectionner un client et ajouter au moins un produit.");
@@ -70,23 +65,27 @@ export class CommandeComponent implements OnInit {
     // Structure des données à envoyer au backend
     const commandeData = {
       clientId: this.selectedClient._id,
-      lignes: this.lignes.map(ligne => ({
+      produits: this.lignes.map(ligne => ({
         produitId: ligne.produit._id,
-        qte: ligne.qte
+        qte: ligne.qte,
+        pu: ligne.produit.pu
       })),
+      totalHT: this.totalHT(),
+      totalTTC: this.totalTTC(),
       date: new Date()
     };
+    
 
-    this.api.passerCommande(commandeData).subscribe(
-      res => {
+    this.commandeService.addCommande(commandeData).subscribe(
+      () => {
         alert('Commande enregistrée avec succès !');
         this.selectedClient = null;
         this.lignes = [];
       },
-      err => {
+      (err: any)=> {
         console.error('Erreur lors de l\'envoi :', err);
         alert('Erreur lors de l\'enregistrement de la commande.');
       }
     );
-  }
-}
+    
+}}
